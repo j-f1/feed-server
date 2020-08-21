@@ -1,9 +1,8 @@
-const fetch = require("node-fetch");
-const cheerio = require("cheerio");
 const parseDate = require("date-fns/parse");
 const startOfToday = require("date-fns/startOfToday");
 const isValid = require("date-fns/isValid");
 const zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
+const { map, scrape, sendFeed } = require("../util");
 
 function map(selection, mapper) {
   return selection.toArray().map((el, i) => mapper(cheerio(el), i));
@@ -22,27 +21,17 @@ function parsePublishDate(date) {
 const url = "https://www.newyorker.com/humor/daily-shouts";
 const parseURL = (relURL) => new URL(relURL, url);
 module.exports = async (req, res) => {
-  const $ = await fetch(url)
-    .then((res) => res.text())
-    .then(cheerio.load);
-
+  const $ = await scrape(url);
   const articles = $("[class*=itemContent i]");
 
-  res.setHeader("content-type", "application/feed+json");
-  res.status(200).json({
-    version: "https://jsonfeed.org/version/1.1",
+  sendFeed({
     title: "Daily Shouts",
     home_page_url: url,
-    feed_url: new URL(req.url, `http://${req.headers.host}`),
+    feed_url: req.url,
     favicon: "https://www.newyorker.com/favicon.ico",
-    language: "en-US",
     items: map(articles, (article) => {
       const title = article.find("h4");
       const articleURL = parseURL(title.parents("a").attr("href"));
-      const authors = map(article.find("[class^=byline i] a"), (link) => ({
-        name: link.text(),
-        url: parseURL(link.attr("href")),
-      }));
       return {
         id: articleURL,
         url: articleURL,
@@ -55,8 +44,10 @@ module.exports = async (req, res) => {
         date_published: parsePublishDate(
           article.find("[class*=publishDate i]").text()
         ),
-        authors,
-        author: authors[0],
+        authors: map(article.find("[class^=byline i] a"), (link) => ({
+          name: link.text(),
+          url: parseURL(link.attr("href")),
+        })),
       };
     }),
   });
