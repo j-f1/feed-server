@@ -29,8 +29,8 @@ function scrape(url) {
 const authorCompat = ({ author, authors }) => {
   if (!author && !authors) return {};
 
-  const single = author ?? authors[0];
-  const multiple = authors ?? [author];
+  const single = author || authors[0];
+  const multiple = authors || [author];
   return { author: single, authors: multiple };
 };
 
