@@ -28,8 +28,7 @@ module.exports = async (req, res) => {
 
   const articles = $("[class*=itemContent i]");
 
-  res.setHeader('content-type', 'application/feed+json')
-
+  res.setHeader("content-type", "application/feed+json");
   res.status(200).json({
     version: "https://jsonfeed.org/version/1.1",
     title: "Daily Shouts",
@@ -57,7 +56,7 @@ module.exports = async (req, res) => {
           article.find("[class*=publishDate i]").text()
         ),
         authors,
-        author: authors[0]
+        author: authors[0],
       };
     }),
   });
