@@ -4,10 +4,6 @@ const isValid = require("date-fns/isValid");
 const zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
 const { map, scrape, sendFeed } = require("../util");
 
-function map(selection, mapper) {
-  return selection.toArray().map((el, i) => mapper(cheerio(el), i));
-}
-
 function parsePublishDate(date) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());
   return zonedTimeToUtc(
