@@ -10,10 +10,9 @@ function map(selection, mapper, limit = null) {
   );
 }
 
-const host =
-  process.env.NODE_ENV === "production"
-    ? "https://feeds.jedfox.com/"
-    : "http://localhost:3000/";
+const isDev = process.env.NODE_ENV === "development";
+
+const host = isDev ? "http://localhost:3000/" : "https://feeds.jedfox.com/";
 
 const staticURL = new URL("/static/", host);
 function static(name) {
@@ -36,14 +35,20 @@ const authorCompat = ({ author, authors }) => {
 
 function sendFeed(res, feed) {
   res.setHeader("content-type", "application/feed+json; charset=utf-8");
-  res.status(200).json({
-    version: "https://jsonfeed.org/version/1.1",
-    language: "en-US",
-    ...feed,
-    feed_url: new URL(feed.feed_url, host),
-    ...authorCompat(feed),
-    items:
-      feed.items &&
-      feed.items.map((item) => ({ ...item, ...authorCompat(item) })),
-  });
+  res.status(200).end(
+    JSON.stringify(
+      {
+        version: "https://jsonfeed.org/version/1.1",
+        language: "en-US",
+        ...feed,
+        feed_url: new URL(feed.feed_url, host),
+        ...authorCompat(feed),
+        items:
+          feed.items &&
+          feed.items.map((item) => ({ ...item, ...authorCompat(item) })),
+      },
+      null,
+      isDev ? 2 : null
+    )
+  );
 }
