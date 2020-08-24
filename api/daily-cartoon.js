@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
       ...item,
       image,
       content_html: `<img src="${image}">${
-        summary[0] === "“" ? `<p align="center">${summary}</p>` : ""
+        summary[0] === "“" ? `<p align="center"><em>${summary}</em></p>` : ""
       }`,
     })),
   });
