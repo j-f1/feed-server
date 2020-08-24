@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
   const $ = await scrape(url);
   const articles = $("[class*=itemContent i]");
 
-  sendFeed({
+  sendFeed(res, {
     title: "Daily Shouts",
     home_page_url: url,
     feed_url: req.url,
