@@ -1,6 +1,6 @@
 const parseDate = require("date-fns/parse");
 const startOfToday = require("date-fns/startOfToday");
-const { map, scrape, sendFeed, static } = require("../util");
+const { map, scrape, sendFeed, static } = require("../src/util");
 
 const url = "https://www.falseknees.com/archive.html";
 const homePage = "https://www.falseknees.com";

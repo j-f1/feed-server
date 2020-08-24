@@ -2,7 +2,7 @@ const parseDate = require("date-fns/parse");
 const startOfToday = require("date-fns/startOfToday");
 const isValid = require("date-fns/isValid");
 const zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
-const { map, scrape, sendFeed } = require("../util");
+const { map, scrape, sendFeed } = require("../src/util");
 
 function parsePublishDate(date) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());
