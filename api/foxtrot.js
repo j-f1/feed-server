@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
       return {
         id: comicURL,
         url: comicURL,
+        author: { name: "Bill Amend", url },
         title: comic.find(".entry-title").text(),
         content_html: `<img srcset="${srcset}">`,
         image: imageSource,
