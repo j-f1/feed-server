@@ -1,8 +1,5 @@
 const parseDate = require("date-fns/parse");
 const startOfToday = require("date-fns/startOfToday");
-const isValid = require("date-fns/isValid");
-const zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
-const fetch = require("node-fetch");
 const { map, scrape, sendFeed, static } = require("../util");
 
 const url = "https://www.falseknees.com/archive.html";
