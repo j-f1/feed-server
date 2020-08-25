@@ -7,18 +7,16 @@ const url = "https://foxtrot.com";
 const parseURL = (relURL) => new URL(relURL, url);
 
 const re = /^(.+?) - (.+)$/;
-module.exports = createFeed(
-  {
-    title: "FoxTrot",
-    home_page_url: url,
-    description: "Bill Amend’s FoxTrot comic strip. New comics every Sunday!",
-    icon:
-      "https://foxtrot.com/wp-content/uploads/2020/05/cropped-favicon-quincy-1.png",
-    favicon:
-      "https://1a3k5t1s1nlq3nug3z23q9ed-wpengine.netdna-ssl.com/wp-content/uploads/2020/05/cropped-favicon-quincy-1-180x180.png",
-    author: { name: "Bill Amend", url },
-  },
-  () =>
+module.exports = createFeed({
+  title: "FoxTrot",
+  home_page_url: url,
+  description: "Bill Amend’s FoxTrot comic strip. New comics every Sunday!",
+  icon:
+    "https://foxtrot.com/wp-content/uploads/2020/05/cropped-favicon-quincy-1.png",
+  favicon:
+    "https://1a3k5t1s1nlq3nug3z23q9ed-wpengine.netdna-ssl.com/wp-content/uploads/2020/05/cropped-favicon-quincy-1-180x180.png",
+  author: { name: "Bill Amend", url },
+  items: () =>
     scrape(url).then(($) =>
       map($(".entry"), (comic) => {
         const comicURL = comic.find(".entry-title a").attr("href");
@@ -40,5 +38,5 @@ module.exports = createFeed(
           ),
         };
       })
-    )
-);
+    ),
+});

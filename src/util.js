@@ -4,15 +4,15 @@ const sub = require("date-fns/sub");
 
 module.exports = { map, scrape, sendFeed, static, makeMidnight, createFeed };
 
-function createFeed(props, getItems) {
+function createFeed({ items: getItems, ...props }, getItems) {
   return async (req, res) => {
-    const meta = { feed_url: req.url, ...props };
+    const feed = { feed_url: req.url, ...props };
     try {
       const items = await getItems();
-      sendFeed(res, { ...meta, items });
+      sendFeed(res, { ...feed, items });
     } catch (error) {
       sendFeed(res, {
-        ...meta,
+        ...feed,
         items: [
           {
             id: "error",

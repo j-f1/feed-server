@@ -6,17 +6,15 @@ const url = "https://www.falseknees.com/archive.html";
 const parseURL = (relURL) => new URL(relURL, url);
 
 const re = /^(.+?) - (.+)$/;
-module.exports = createFeed(
-  {
-    title: "False Knees",
-    home_page_url: "https://www.falseknees.com",
-    icon: static("false-knees.jpg"),
-    author: {
-      name: "Joshua Barkman",
-      url: "https://www.falseknees.com/about.html",
-    },
+module.exports = createFeed({
+  title: "False Knees",
+  home_page_url: "https://www.falseknees.com",
+  icon: static("false-knees.jpg"),
+  author: {
+    name: "Joshua Barkman",
+    url: "https://www.falseknees.com/about.html",
   },
-  () =>
+  items: () =>
     scrape(url).then(($) =>
       Promise.all(
         map(
@@ -49,5 +47,5 @@ module.exports = createFeed(
           10
         )
       )
-    )
-);
+    ),
+});
