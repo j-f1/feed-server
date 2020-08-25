@@ -1,7 +1,12 @@
 const cheerio = require("cheerio");
 const fetch = require("node-fetch");
+const sub = require("date-fns/sub");
 
-module.exports = { map, scrape, sendFeed, static };
+module.exports = { map, scrape, sendFeed, static, makeMidnight };
+
+function makeMidnight(date) {
+  return sub(date, { minutes: new Date().getTimezoneOffset() });
+}
 
 function map(selection, mapper, limit = null) {
   const array = selection.toArray();

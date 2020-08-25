@@ -1,4 +1,4 @@
-const { map, scrape } = require("../src/util");
+const { map, scrape, makeMidnight } = require("../src/util");
 
 const parseDate = require("date-fns/parse");
 const startOfToday = require("date-fns/startOfToday");
@@ -9,12 +9,12 @@ module.exports = { parseArticles };
 
 function parsePublishDate(date) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());
-  return zonedTimeToUtc(
-    isValid(dayDate)
-      ? dayDate
-      : parseDate(date.toLowerCase(), "h:mm aaaa", startOfToday()),
-    "America/New_York"
-  );
+  return isValid(dayDate)
+    ? makeMidnight(dayDate)
+    : zonedTimeToUtc(
+        parseDate(date.toLowerCase(), "h:mm aaaa", startOfToday()),
+        "America/New_York"
+      );
 }
 
 async function parseArticles(url) {
