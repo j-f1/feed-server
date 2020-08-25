@@ -4,7 +4,7 @@ const sub = require("date-fns/sub");
 
 module.exports = { map, scrape, sendFeed, static, makeMidnight, createFeed };
 
-function createFeed({ items: getItems, ...props }, getItems) {
+function createFeed({ items: getItems, ...props }) {
   return async (req, res) => {
     const feed = { feed_url: req.url, ...props };
     try {
@@ -16,7 +16,7 @@ function createFeed({ items: getItems, ...props }, getItems) {
         items: [
           {
             id: "error",
-            title: `Error in ${meta.title}`,
+            title: `Error in ${props.title}`,
             summary: String(error),
             date_published: new Date(),
             content_html: `<pre>${error.stack
