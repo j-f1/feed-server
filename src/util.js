@@ -2,7 +2,32 @@ const cheerio = require("cheerio");
 const fetch = require("node-fetch");
 const sub = require("date-fns/sub");
 
-module.exports = { map, scrape, sendFeed, static, makeMidnight };
+module.exports = { map, scrape, sendFeed, static, makeMidnight, createFeed };
+
+function createFeed(props, getItems) {
+  return async (req, res) => {
+    const meta = { feed_url: req.url, ...props };
+    try {
+      const items = await getItems();
+      sendFeed(res, { ...meta, items });
+    } catch (error) {
+      sendFeed(res, {
+        ...meta,
+        items: [
+          {
+            id: "error",
+            title: `Error in ${meta.title}`,
+            summary: String(error),
+            date_published: new Date(),
+            content_html: `<pre>${error.stack
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")}</pre>`,
+          },
+        ],
+      });
+    }
+  };
+}
 
 function makeMidnight(date) {
   return sub(date, { minutes: new Date().getTimezoneOffset() });
