@@ -1,5 +1,5 @@
 const parseDate = require("date-fns/parse");
-const startOfToday = createFeed("date-fns/startOfToday");
+const startOfToday = require("date-fns/startOfToday");
 const { map, scrape, createFeed, static } = require("../src/util");
 
 const url = "https://www.falseknees.com/archive.html";
