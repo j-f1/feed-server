@@ -1,12 +1,10 @@
 const parseDate = require("date-fns/parse");
 const startOfToday = require("date-fns/startOfToday");
-const { map, scrape, createFeed, static } = require("../src/util");
+const { map, scrape, createFeed } = require("../src/util");
 const { parse: parseSrcset } = require("srcset");
 
 const url = "https://foxtrot.com";
-const parseURL = (relURL) => new URL(relURL, url);
 
-const re = /^(.+?) - (.+)$/;
 module.exports = createFeed({
   title: "FoxTrot",
   home_page_url: url,
