@@ -49,10 +49,10 @@ function static(name) {
   return new URL(name, staticURL);
 }
 
-function scrape(url) {
+function scrape(url, options) {
   return fetch(url)
     .then((res) => res.text())
-    .then(cheerio.load);
+    .then((text) => cheerio.load(text, options));
 }
 
 const authorCompat = ({ author, authors }) => {
