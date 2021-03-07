@@ -1,11 +1,9 @@
-import { FeedItem } from "./json-feed";
-
 import { map, scrape, makeMidnight } from "../src/util";
 
 import parseDate from "date-fns/parse";
 import startOfToday from "date-fns/startOfToday";
 import isValid from "date-fns/isValid";
-import zonedTimeToUtc from "date-fns-tz/zonedTimeToUtc";
+import zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
 
 function parsePublishDate(date: string) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());
@@ -48,7 +46,7 @@ function parseArticle(
     ).toISOString(),
     authors: map(article.find("[class^=byline i] a"), (link) => ({
       name: link.text(),
-      url: parseURL(link.attr("href")!),
+      url: parseURL(link.attr("href")!).toString(),
     })),
     content_html: `<p><em>${summary}</em></p><img width=500 src="${image}" />`,
   };

@@ -35,11 +35,11 @@ export type FeedItem = {
   banner_image?: string;
   date_published?: string; // RFC 3339 format
   date_modified?: string; // RFC 3339 format
-  authors?: Author[];
-  author?: Author;
+  authors?: FeedAuthor[];
+  author?: FeedAuthor;
   tags?: string[];
   language?: string;
-  attachments?: Attachment[];
+  attachments?: FeedAttachment[];
 } & ({ content_html: string } | { content_text: string });
 
 export interface FeedAttachment {

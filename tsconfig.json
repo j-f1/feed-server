@@ -1,7 +1,6 @@
 {
-    "compilerOptions": {
-        "checkJs": true,
-        "strict": true,
-        "noImplicitAny": true
-    }
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true
+  }
 }
