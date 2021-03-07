@@ -1,8 +1,8 @@
-const { createFeed } = require("../src/util");
-const { parseArticles } = require("../src/new-yorker");
+import { createFeed } from "../src/util";
+import { parseArticles } from "../src/new-yorker";
 
 const url = "https://www.newyorker.com/humor/daily-shouts";
-module.exports = createFeed({
+export default createFeed({
   title: "Daily Shouts",
   home_page_url: url,
   favicon: "https://www.newyorker.com/favicon.ico",

@@ -1,11 +1,11 @@
-const parseDate = require("date-fns/parse");
-const startOfToday = require("date-fns/startOfToday");
-const { map, scrape, createFeed } = require("../src/util");
-const { parse: parseSrcset } = require("srcset");
+import parseDate from "date-fns/parse";
+import startOfToday from "date-fns/startOfToday";
+import { map, scrape, createFeed } from "../src/util";
+import { parse as parseSrcset } from "srcset";
 
 const url = "https://foxtrot.com";
 
-module.exports = createFeed({
+export default createFeed({
   title: "FoxTrot",
   home_page_url: url,
   description: "Bill Amend’s FoxTrot comic strip. New comics every Sunday!",
@@ -17,10 +17,10 @@ module.exports = createFeed({
   items: () =>
     scrape(url).then(($) =>
       map($(".entry"), (comic) => {
-        const comicURL = comic.find(".entry-title a").attr("href");
-        const srcset = comic.find("img").attr("srcset");
+        const comicURL = comic.find(".entry-title a").attr("href")!;
+        const srcset = comic.find("img").attr("srcset")!;
         const imageSource = parseSrcset(srcset).sort(
-          (a, b) => b.width - a.width
+          (a, b) => b.width! - a.width!
         )[0].url;
         return {
           id: comicURL,
@@ -33,7 +33,7 @@ module.exports = createFeed({
             comic.find(".entry-summary").text().trim(),
             "MMMM do, yyyy",
             startOfToday()
-          ),
+          ).toISOString(),
         };
       })
     ),

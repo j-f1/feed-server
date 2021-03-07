@@ -1,12 +1,12 @@
-const fetch = require("node-fetch");
-const { createFeed } = require("../src/util");
-const { encode } = require("querystring");
+import fetch from "node-fetch";
+import { createFeed } from "../src/util";
+import { encode } from "querystring";
 
-const absolute = (relURL) => new URL(relURL, "https://www.nasa.gov/");
-const image = (uri) =>
+const absolute = (relURL: string) => new URL(relURL, "https://www.nasa.gov/");
+const image = (uri: string) =>
   absolute(uri.replace("public://", "/sites/default/files/"));
 
-const escape = (val) =>
+const escape = (val: string) =>
   String(val).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 
 module.exports = createFeed({
@@ -32,13 +32,13 @@ module.exports = createFeed({
     )
       .then((res) => res.json())
       .then(({ hits: { hits } }) =>
-        hits.map(({ _source: item }) => ({
+        hits.map(({ _source: item }: Ubernode) => ({
           id: absolute(item.uri),
           url: absolute(item.uri),
           title: item.title,
           content_html:
             `<img src="${escape(
-              image(item["master-image"].uri)
+              image(item["master-image"].uri).toString()
             )}" alt="${escape(item["master-image"].alt)}" width="${escape(
               item["master-image"].width
             )}" height="${escape(item["master-image"].height)}">` + item.body,
@@ -50,7 +50,32 @@ module.exports = createFeed({
       ),
 });
 
-let _example = {
+interface Ubernode {
+  _index: string;
+  _type: string;
+  _id: string;
+  _score: unknown;
+  _source: {
+    title: string;
+    body: string;
+    name: string;
+    "promo-date-time": string;
+    uri: string;
+    "image-feature-caption": string;
+    "master-image": {
+      fid: string;
+      alt: string;
+      width: string;
+      id: string;
+      title: string;
+      uri: string;
+      height: string;
+    };
+  };
+  sort: unknown;
+}
+
+let _example: Ubernode = {
   _index: "nasa-public",
   _type: "ubernode",
   _id: "464164",

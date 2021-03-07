@@ -1,9 +1,9 @@
-const parseDate = require("date-fns/parse");
-const startOfToday = require("date-fns/startOfToday");
-const { map, scrape, createFeed, static } = require("../src/util");
+import parseDate from "date-fns/parse";
+import startOfToday from "date-fns/startOfToday";
+import { map, scrape, createFeed, Cheerio } from "../src/util";
 
 const url = "https://www.smbc-comics.com/comic/rss";
-const parseURL = (relURL) => new URL(relURL, url);
+const parseURL = (relURL: string) => new URL(relURL, url);
 
 const re = /^(.+?) - (.+)$/;
 module.exports = createFeed({
@@ -26,31 +26,31 @@ module.exports = createFeed({
               .replace("Saturday Morning Breakfast Cereal - ", "");
             const date = comic
               .children()
-              .filter(function () {
+              .filter(function (this: Cheerio[number]) {
                 return this.name === "pubDate";
               })
               .text();
-            const comicURL = parseURL(comic.find("link").text());
 
+            const comicURL = parseURL(comic.find("link").text());
             const $comic = await scrape(comicURL);
 
             const image = $comic("#cc-comic");
-            const imageSource = parseURL(image.attr("src"));
+            const imageSource = parseURL(image.attr("src")!);
             const hovertext = image.attr("title");
 
-            const extraImage = parseURL($comic("#aftercomic img").attr("src"));
+            const extraImage = parseURL($comic("#aftercomic img").attr("src")!);
 
             return {
-              id: comicURL,
-              url: comicURL,
+              id: comicURL.toString(),
+              url: comicURL.toString(),
               title,
               content_html: `<img src="${imageSource}" title="${hovertext}"><br><img src="${extraImage}">`,
-              image: imageSource,
+              image: imageSource.toString(),
               date_published: parseDate(
                 date,
                 "EEE, dd MMM yyyy HH:mm:ss XX",
                 startOfToday()
-              ),
+              ).toISOString(),
             };
           },
           10

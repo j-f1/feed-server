@@ -1,11 +1,16 @@
-const cheerio = require("cheerio");
-const fetch = require("node-fetch");
-const sub = require("date-fns/sub");
+import cheerio = require("cheerio");
+import fetch from "node-fetch";
+import sub from "date-fns/sub";
 
-module.exports = { map, scrape, sendFeed, static, makeMidnight, createFeed };
+export type Cheerio = ReturnType<typeof cheerio>;
+import { JSONFeed, FeedItem } from "./json-feed";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
-function createFeed({ items: getItems, ...props }) {
-  return async (req, res) => {
+export function createFeed({
+  items: getItems,
+  ...props
+}: Omit<JSONFeed, "items" | "version"> & { items: () => Promise<FeedItem[]> }) {
+  return async (req: VercelRequest, res: VercelResponse) => {
     const feed = { feed_url: req.url, ...props };
     try {
       const items = await getItems();
@@ -18,7 +23,7 @@ function createFeed({ items: getItems, ...props }) {
             id: "error",
             title: `Error in ${props.title}`,
             summary: String(error),
-            date_published: new Date(),
+            date_published: new Date().toISOString(),
             content_html: `<pre>${error.stack
               .replace(/&/g, "&amp;")
               .replace(/</g, "&lt;")}</pre>`,
@@ -29,11 +34,15 @@ function createFeed({ items: getItems, ...props }) {
   };
 }
 
-function makeMidnight(date) {
+export function makeMidnight(date: Date) {
   return sub(date, { minutes: new Date().getTimezoneOffset() });
 }
 
-function map(selection, mapper, limit = null) {
+export function map<T>(
+  selection: Cheerio,
+  mapper: (el: Cheerio, i: number) => T,
+  limit?: number
+) {
   const array = selection.toArray();
   return (limit ? array.slice(0, limit) : array).map((el, i) =>
     mapper(cheerio(el), i)
@@ -45,25 +54,34 @@ const isDev = process.env.NODE_ENV === "development";
 const host = isDev ? "http://localhost:3000/" : "https://feeds.jedfox.com/";
 
 const staticURL = new URL("/static/", host);
-function static(name) {
-  return new URL(name, staticURL);
+export function staticFile(name: string) {
+  return new URL(name, staticURL).toString();
 }
 
-function scrape(url, options) {
+export function scrape(
+  url: string | URL,
+  options: Parameters<typeof cheerio.load>[1] = undefined
+) {
   return fetch(url)
     .then((res) => res.text())
     .then((text) => cheerio.load(text, options));
 }
 
-const authorCompat = ({ author, authors }) => {
+const authorCompat = ({
+  author,
+  authors,
+}: Pick<JSONFeed, "author" | "authors">) => {
   if (!author && !authors) return {};
 
-  const single = author || authors[0];
+  const single = author || authors![0];
   const multiple = authors || [author];
   return { author: single, authors: multiple };
 };
 
-function sendFeed(res, feed) {
+export function sendFeed(
+  res: VercelResponse,
+  feed: Omit<import("./json-feed").JSONFeed, "version">
+) {
   res.setHeader("content-type", "application/feed+json; charset=utf-8");
   res.status(200).end(
     JSON.stringify(
@@ -71,14 +89,14 @@ function sendFeed(res, feed) {
         version: "https://jsonfeed.org/version/1.1",
         language: "en-US",
         ...feed,
-        feed_url: new URL(feed.feed_url, host),
+        feed_url: feed.feed_url ? new URL(feed.feed_url, host) : feed.feed_url,
         ...authorCompat(feed),
         items:
           feed.items &&
           feed.items.map((item) => ({ ...item, ...authorCompat(item) })),
       },
-      null,
-      isDev ? 2 : null
+      undefined,
+      isDev ? 2 : undefined
     )
   );
 }
