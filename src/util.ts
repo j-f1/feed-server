@@ -95,8 +95,12 @@ export function sendFeed(
 ) {
   res.setHeader("content-type", "application/feed+json; charset=utf-8");
   if (process.env.NODE_ENV === "production") {
-    // cache for 10 minutes
-    res.setHeader("cache-control", `max-age=${10 * 60}, public`);
+    if (feed.items[0].id === "error") {
+      res.setHeader("cache-control", "max-age=0, no-store");
+    } else {
+      // cache for 10 minutes
+      res.setHeader("cache-control", `max-age=${10 * 60}, public`);
+    }
   }
   res.status(200).end(
     JSON.stringify(
