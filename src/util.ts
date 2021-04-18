@@ -6,6 +6,11 @@ export type Cheerio = ReturnType<typeof cheerio>;
 import { JSONFeed, FeedItem } from "./json-feed";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
+declare global {
+  const URL: typeof import("url").URL;
+  type URL = import("url").URL;
+}
+
 export function createFeed({
   items: getItems,
   ...props
