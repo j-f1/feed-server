@@ -49,6 +49,12 @@ export function map<T>(
   );
 }
 
+map.await = <T>(
+  selection: Cheerio,
+  mapper: (el: Cheerio, i: number) => Promise<T>,
+  limit?: number
+) => Promise.all(map(selection, mapper, limit));
+
 const isDev = process.env.NODE_ENV === "development";
 
 const host = isDev ? "http://localhost:3000/" : "https://feeds.jedfox.com/";

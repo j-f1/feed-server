@@ -1,5 +1,9 @@
 // https://jsonfeed.org/version/1.1
 
+declare global {
+  const URL: typeof import("url").URL;
+}
+
 export interface JSONFeed {
   version:
     | "https://jsonfeed.org/version/1.1"
