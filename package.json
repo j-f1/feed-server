@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package",
   "private": true,
   "scripts": {
-    "test": "tsc --noEmit && prettier --check ."
+    "test": "prettier --check . && tsc --noEmit"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.5",
