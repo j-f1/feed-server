@@ -5,7 +5,7 @@ import startOfToday from "date-fns/startOfToday";
 import isValid from "date-fns/isValid";
 import zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
 
-function parsePublishDate(date: string) {
+export function parsePublishDate(date: string) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());
   return isValid(dayDate)
     ? makeMidnight(dayDate)
@@ -42,12 +42,15 @@ function parseArticle(
     summary: summary,
     image: image,
     date_published: parsePublishDate(
-      article.find("[class*=publishDate i]").text()
+      article.find("[data-testid=ContentHeaderPublishDate]").text()
     ).toISOString(),
-    authors: map(article.find("[class^=byline i] a"), (link) => ({
-      name: link.text(),
-      url: parseURL(link.attr("href")!).toString(),
-    })),
+    authors: map(
+      article.find("[data-testid=ContentHeaderPublishDate] a"),
+      (link) => ({
+        name: link.text(),
+        url: parseURL(link.attr("href")!).toString(),
+      })
+    ),
     content_html: `<p><em>${summary}</em></p><img width=500 src="${image}" />`,
   };
 }
