@@ -35,6 +35,8 @@ function parseArticle(
     .find("img")
     .attr("src")!
     .replace("4:3/w_116,c_limit/", "w_500/");
+  console.log(articleURL);
+  console.log(article.html());
   return {
     id: articleURL,
     url: articleURL,
@@ -42,15 +44,12 @@ function parseArticle(
     summary: summary,
     image: image,
     date_published: parsePublishDate(
-      article.find("[data-testid=ContentHeaderPublishDate]").text()
+      article.find("[class*=publishDate i]").text()
     ).toISOString(),
-    authors: map(
-      article.find("[data-testid=ContentHeaderPublishDate] a"),
-      (link) => ({
-        name: link.text(),
-        url: parseURL(link.attr("href")!).toString(),
-      })
-    ),
+    authors: map(article.find("[class^=byline i] a"), (link) => ({
+      name: link.text(),
+      url: parseURL(link.attr("href")!).toString(),
+    })),
     content_html: `<p><em>${summary}</em></p><img width=500 src="${image}" />`,
   };
 }

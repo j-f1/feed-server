@@ -12,6 +12,8 @@ const exclusions = [
   "Musical Events",
   "The Theatre",
   "Under Review",
+  "Fiction",
+  "This Week in Fiction",
 ];
 
 async function parseArticle(article: ReturnType<typeof import("cheerio")>) {
