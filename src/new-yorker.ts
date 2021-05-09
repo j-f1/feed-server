@@ -35,8 +35,6 @@ function parseArticle(
     .find("img")
     .attr("src")!
     .replace("4:3/w_116,c_limit/", "w_500/");
-  console.log(articleURL);
-  console.log(article.html());
   return {
     id: articleURL,
     url: articleURL,
