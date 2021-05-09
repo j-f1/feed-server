@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": true,
-    "lib": ["ES2019"]
+    "lib": ["ES2019"],
+    "noUnusedLocals": true
   }
 }

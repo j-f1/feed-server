@@ -1,6 +1,6 @@
 import parseDate from "date-fns/parse";
 import startOfToday from "date-fns/startOfToday";
-import { map, scrape, createFeed } from "../src/util";
+import { scrape, createFeed, scrapeItems } from "../src/util";
 
 function parseLists(input: string) {
   const result: string[] = [];
@@ -28,49 +28,45 @@ export default createFeed({
   home_page_url: "https://lists.gnu.org/mailman/listinfo/info-nano",
   description: "The GNU nano announcements mailing list",
   favicon: "https://www.nano-editor.org/favicon.ico",
-  items: () =>
-    scrape(archiveURL).then(($) =>
-      map
-        .await(
-          $('a[href$="/index.html"]'),
-          (monthLink) => {
-            const monthURL = new URL(monthLink.attr("href")!, archiveURL);
-            return scrape(monthURL).then(($) =>
-              map.await($("a[href^=msg]"), (threadLink) => {
-                const articleEl = threadLink.parent();
-                const articleURL = new URL(
-                  threadLink.attr("href")!,
-                  monthURL
-                ).toString();
-                return scrape(articleURL).then(($) => ({
-                  id: articleURL,
-                  url: articleURL,
-                  title: threadLink
-                    .text()
-                    .replace("[Info-nano] ", "")
-                    .replace("[ANNOUNCE] ", ""),
-                  date_published: parseDate(
-                    `${articleEl
-                      .parents("li")
-                      .children()
-                      .first()
-                      .text()} ${articleEl.find("tt").text()}`,
-                    "MMMM dd, yyyy HH:mm",
-                    startOfToday()
-                  ).toISOString(),
-                  author: { name: articleEl.find("i").text() },
-                  content_html: `<div style="white-space: pre-wrap">${parseLists(
-                    $("pre").html()!
-                  ).replace(
-                    /(^|[^a-z])'(.+?)\b'($|[^a-z])/g,
-                    "$1<code>$2</code>$3"
-                  )}</div>`,
-                }));
-              })
-            );
-          },
-          3
-        )
-        .then((args) => args.flatMap((a) => a))
-    ),
+  items: scrapeItems(
+    archiveURL,
+    { selector: 'a[href$="/index.html"]', limit: 3 },
+    (monthLink) => {
+      const monthURL = new URL(monthLink.attr("href")!, archiveURL);
+      return scrapeItems.now(
+        monthURL,
+        { selector: "a[href^=msg]" },
+        ($threadLink) => {
+          const $article = $threadLink.parent();
+          const articleURL = new URL(
+            $threadLink.attr("href")!,
+            monthURL
+          ).toString();
+          return scrape(articleURL).then(($) => ({
+            id: articleURL,
+            title: $threadLink
+              .text()
+              .replace("[Info-nano] ", "")
+              .replace("[ANNOUNCE] ", ""),
+            date_published: parseDate(
+              `${$article
+                .parents("li")
+                .children()
+                .first()
+                .text()} ${$article.find("tt").text()}`,
+              "MMMM dd, yyyy HH:mm",
+              startOfToday()
+            ).toISOString(),
+            author: { name: $article.find("i").text() },
+            content_html: `<div style="white-space: pre-wrap">${parseLists(
+              $("pre").html()!
+            ).replace(
+              /(^|[^a-z])'(.+?)\b'($|[^a-z])/g,
+              "$1<code>$2</code>$3"
+            )}</div>`,
+          }));
+        }
+      );
+    }
+  ),
 });

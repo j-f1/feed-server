@@ -1,4 +1,4 @@
-import { map, scrape, createFeed, Cheerio } from "../src/util";
+import { map, scrapeItems, createFeed, Cheerio } from "../src/util";
 import cheerio = require("cheerio");
 import { parsePublishDate } from "../src/new-yorker";
 import fetch from "node-fetch";
@@ -16,7 +16,7 @@ const exclusions = [
   "This Week in Fiction",
 ];
 
-async function parseArticle(article: ReturnType<typeof import("cheerio")>) {
+async function parseArticle(article: Cheerio) {
   const articleResponse = await fetch(article.attr("href")!);
   const articleURL = articleResponse.url.split("?")[0];
 
@@ -29,7 +29,6 @@ async function parseArticle(article: ReturnType<typeof import("cheerio")>) {
 
   return {
     id: articleURL,
-    url: articleURL,
     title: article.find(".hed").text(),
     summary,
     image,
@@ -51,38 +50,30 @@ module.exports = createFeed({
   home_page_url: "https://www.newyorker.com/",
   icon:
     "https://media.newyorker.com/photos/59096d7d6552fa0be682ff8f/master/eustace-400.png",
-  items: () =>
-    scrape(
-      "https://www.kill-the-newsletter.com/feeds/yof6oolwi1ssoj74co8r.xml",
-      { xml: true }
-    ).then(($) =>
-      Promise.all(
-        map(
-          $("entry"),
-          async (issue) => {
-            const title = issue.children("title").text();
-            if (title.includes("This Week's Featured City")) return [];
+  items: scrapeItems(
+    "https://www.kill-the-newsletter.com/feeds/yof6oolwi1ssoj74co8r.xml",
+    { xml: true, selector: "entry", limit: 10 },
+    async (issue) => {
+      const title = issue.children("title").text();
+      if (title.includes("This Week's Featured City")) return [];
 
-            const $ = cheerio.load(issue.children("content[type=html]").text());
-            const articles = map(
-              $(".article").filter(
-                (_, el) => !exclusions.includes($(el).find(".rubric").text())
-              ),
-              parseArticle
-            );
-            if (!articles.length) {
-              return [
-                {
-                  id: "error::" + issue.children("id").text(),
-                  url: issue.find("link").attr("href")!,
-                  content_text: "No articles parsed",
-                },
-              ];
-            }
-            return Promise.all(articles);
+      const $ = cheerio.load(issue.children("content[type=html]").text());
+      const articles = map(
+        $(".article").filter(
+          (_, el) => !exclusions.includes($(el).find(".rubric").text())
+        ),
+        parseArticle
+      );
+      if (!articles.length) {
+        return [
+          {
+            id: "error::" + issue.children("id").text(),
+            url: issue.find("link").attr("href")!,
+            content_text: "No articles parsed",
           },
-          10
-        )
-      ).then((args) => args.flatMap((a) => a))
-    ),
+        ];
+      }
+      return Promise.all(articles);
+    }
+  ),
 });

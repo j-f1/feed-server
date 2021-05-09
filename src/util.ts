@@ -1,14 +1,28 @@
 import cheerio = require("cheerio");
 import fetch from "node-fetch";
 import sub from "date-fns/sub";
+import { format as prettier } from "prettier";
 
 export type Cheerio = ReturnType<typeof cheerio>;
+export type Awaitable<T> = T | PromiseLike<T>;
+export type $ = ReturnType<typeof cheerio.load>;
 import { JSONFeed, FeedItem } from "./json-feed";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
 declare global {
   const URL: typeof import("url").URL;
   type URL = import("url").URL;
+}
+
+function makeError(error: Error) {
+  return {
+    id: "error",
+    summary: String(error),
+    date_published: new Date().toISOString(),
+    content_html: `<pre>${error
+      .stack!.replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")}</pre>`,
+  };
 }
 
 export function createFeed({
@@ -23,17 +37,7 @@ export function createFeed({
     } catch (error) {
       sendFeed(res, {
         ...feed,
-        items: [
-          {
-            id: "error",
-            title: `Error in ${props.title}`,
-            summary: String(error),
-            date_published: new Date().toISOString(),
-            content_html: `<pre>${error.stack
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")}</pre>`,
-          },
-        ],
+        items: [{ ...makeError(error), title: `Error in ${props.title}` }],
       });
     }
   };
@@ -49,16 +53,19 @@ export function map<T>(
   limit?: number
 ) {
   const array = selection.toArray();
-  return (limit ? array.slice(0, limit) : array).map((el, i) =>
+  return (limit ? array.slice(0, limit) : array).flatMap((el, i) =>
     mapper(cheerio(el), i)
   );
 }
 
 map.await = <T>(
   selection: Cheerio,
-  mapper: (el: Cheerio, i: number) => Promise<T>,
+  mapper: (el: Cheerio, i: number) => Promise<T | T[]>,
   limit?: number
-) => Promise.all(map(selection, mapper, limit));
+) =>
+  Promise.all(map(selection, mapper, limit)).then((result) =>
+    result.flatMap((x) => x)
+  );
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -71,12 +78,65 @@ export function staticFile(name: string) {
 
 export function scrape(
   url: string | URL,
-  options: Parameters<typeof cheerio.load>[1] = undefined
+  options?: Parameters<typeof cheerio.load>[1]
 ) {
   return fetch(url)
     .then((res) => res.text())
     .then((text) => cheerio.load(text, options));
 }
+
+export function scrapeItems(
+  url: string | URL,
+  {
+    xml = false,
+    selector,
+    limit,
+  }: {
+    xml?: boolean;
+    selector: (($: $) => Cheerio) | string;
+    limit?: number;
+  },
+  mapper: (item: Cheerio, $: $) => Awaitable<FeedItem | FeedItem[]>
+) {
+  return () =>
+    scrape(url, { xml })
+      .then(($) =>
+        map.await(
+          typeof selector == "function" ? selector($) : $(selector),
+          async (item) => {
+            try {
+              return await mapper(item, $);
+            } catch (err) {
+              const href = item.find("a").attr("href") ?? url.toString();
+              const errorItem = makeError(err);
+              return {
+                ...errorItem,
+                title: "Error in feed",
+                id: href,
+                content_html:
+                  errorItem.content_html +
+                  `<p>HTML content:</p><pre>${prettier(cheerio.html(item), {
+                    parser: "html",
+                    htmlWhitespaceSensitivity: "ignore",
+                  })
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;")}</pre>`,
+              };
+            }
+          },
+          limit
+        )
+      )
+      .then((items) =>
+        items.map((item) => (!item.url ? { url: item.id, ...item } : item))
+      );
+}
+
+scrapeItems.now = (...args: Parameters<typeof scrapeItems>) =>
+  scrapeItems(...args)();
 
 const authorCompat = ({
   author,

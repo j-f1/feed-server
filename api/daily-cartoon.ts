@@ -6,14 +6,12 @@ export default createFeed({
   title: "Daily Cartoon",
   home_page_url: url,
   favicon: "https://www.newyorker.com/favicon.ico",
-  items: () =>
-    parseArticles(url).then((articles) =>
-      articles.map(({ image, summary, ...item }) => ({
-        ...item,
-        image,
-        content_html: `<img src="${image}">${
-          summary[0] === "“" ? `<p align="center"><em>${summary}</em></p>` : ""
-        }`,
-      }))
-    ),
+  items: parseArticles(url, (article) => ({
+    ...article,
+    content_html: `<img src="${article.image}">${
+      article.summary[0] === "“"
+        ? `<p align="center"><em>${article.summary}</em></p>`
+        : ""
+    }`,
+  })),
 });

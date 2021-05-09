@@ -1,9 +1,10 @@
-import { map, scrape, makeMidnight } from "../src/util";
+import { map, makeMidnight, scrapeItems, Cheerio } from "../src/util";
 
 import parseDate from "date-fns/parse";
 import startOfToday from "date-fns/startOfToday";
 import isValid from "date-fns/isValid";
 import zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
+import { FeedItem } from "./json-feed";
 
 export function parsePublishDate(date: string) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());
@@ -15,19 +16,16 @@ export function parsePublishDate(date: string) {
       );
 }
 
-export async function parseArticles(
-  url: string
-): Promise<ReturnType<typeof parseArticle>[]> {
-  const parseURL = (relURL: string) => new URL(relURL, url);
-  const $ = await scrape(url);
-  const articles = $("[class*=itemContent i]");
-  return map(articles, parseArticle.bind(null, parseURL));
+export function parseArticles(
+  url: string,
+  mapper: (article: ReturnType<typeof parseArticle>) => FeedItem = (x) => x
+): () => Promise<FeedItem[]> {
+  return scrapeItems(url, { selector: "[class*=itemContent i]" }, (article) =>
+    mapper(parseArticle((relURL: string) => new URL(relURL, url), article))
+  );
 }
 
-function parseArticle(
-  parseURL: (url: string) => URL,
-  article: ReturnType<typeof import("cheerio")>
-) {
+function parseArticle(parseURL: (url: string) => URL, article: Cheerio) {
   const title = article.find("h4");
   const articleURL = parseURL(title.parents("a").attr("href")!).toString();
   const summary = article.find("h5").text();
@@ -37,7 +35,6 @@ function parseArticle(
     .replace("4:3/w_116,c_limit/", "w_500/");
   return {
     id: articleURL,
-    url: articleURL,
     title: title.text(),
     summary: summary,
     image: image,

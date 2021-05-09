@@ -101,3 +101,4 @@ let _example: Ubernode = {
   },
   sort: [1599195420000],
 };
+_example;

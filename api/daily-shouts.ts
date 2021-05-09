@@ -6,5 +6,5 @@ export default createFeed({
   title: "Daily Shouts",
   home_page_url: url,
   favicon: "https://www.newyorker.com/favicon.ico",
-  items: () => parseArticles(url),
+  items: parseArticles(url),
 });
