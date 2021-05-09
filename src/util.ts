@@ -107,7 +107,7 @@ export function scrapeItems(
             try {
               return await mapper(item, $);
             } catch (err) {
-              const href = item.find("a").attr("href") ?? url.toString();
+              const href = item.find("a").attr("href") || url.toString();
               const errorItem = makeError(err);
               return {
                 ...errorItem,
