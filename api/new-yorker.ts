@@ -14,6 +14,10 @@ const exclusions = [
   "Under Review",
   "Fiction",
   "This Week in Fiction",
+  "Poems",
+  "The New Yorker Radio Hour",
+  "Photo Booth",
+  "Cryptic Crossword",
 ];
 
 async function parseArticle(article: Cheerio) {
