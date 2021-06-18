@@ -1,7 +1,15 @@
-import { map, scrapeItems, createFeed, Cheerio, makeError } from "../src/util";
+import {
+  map,
+  scrapeItems,
+  createFeed,
+  Cheerio,
+  makeError,
+  $,
+} from "../src/util";
 import cheerio = require("cheerio");
 import { parsePublishDate } from "../src/new-yorker";
 import fetch from "node-fetch";
+import { FeedItem } from "../src/json-feed";
 
 const exclusions = [
   "Daily Shouts",
@@ -39,6 +47,29 @@ async function parseArticle(article: Cheerio) {
   };
 }
 
+function parseClassic($: $, url: string): FeedItem {
+  const title = $('[style="font-size: 28px; color: #000000;"]');
+  return {
+    id: url,
+    url,
+    external_url: title.attr("href")!,
+    title: title.text(),
+    content_html: `
+      <p>
+        <strong>${$('[style*="color: #df3331"]').first().text()}</strong>:
+        ${$('[style="text-decoration: none; color: #999999;"]').first().text()}
+      </p>
+      ${$('[style*="color:#121212;"] > [style*="font-size: 18px;"]').text()}
+    `,
+    author: {
+      name: $('strong>[style="font-size: 13px; mso-ansi-font-size: 14px;"]')
+        .first()
+        .html()!
+        .replace(/^By /, ""),
+    },
+  };
+}
+
 module.exports = createFeed({
   title: "The New Yorker",
   home_page_url: "https://www.newyorker.com/",
@@ -52,6 +83,9 @@ module.exports = createFeed({
       if (title.includes("This Week's Featured City")) return [];
 
       const $ = cheerio.load(issue.children("content[type=html]").text());
+      if (!$('[alt="THE NEW YORKER CLASSICS NEWSLETTER"]').empty()) {
+        return parseClassic($, issue.find("link").attr("href")!);
+      }
       const $articles = $(".article").filter(
         (_, el) =>
           !exclusions.includes($(el).find(".rubric").text()) &&
