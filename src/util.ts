@@ -14,7 +14,9 @@ declare global {
   type URL = import("url").URL;
 }
 
-function makeError(error: Error) {
+Error.stackTraceLimit = 100;
+
+export function makeError(error: Error) {
   return {
     id: "error",
     summary: String(error),
@@ -109,16 +111,30 @@ export function scrapeItems(
             } catch (err) {
               const href = item.find("a").attr("href") || url.toString();
               const errorItem = makeError(err);
+              let html;
+              try {
+                html = prettier(cheerio.html(item), {
+                  parser: "html",
+                  htmlWhitespaceSensitivity: "ignore",
+                });
+              } catch {
+                try {
+                  html = cheerio.html(item);
+                } catch {
+                  try {
+                    html = item.html();
+                  } catch {
+                    html = require("util").inspect(item[0]);
+                  }
+                }
+              }
               return {
                 ...errorItem,
                 title: "Error in feed",
                 id: href,
                 content_html:
                   errorItem.content_html +
-                  `<p>HTML content:</p><pre>${prettier(cheerio.html(item), {
-                    parser: "html",
-                    htmlWhitespaceSensitivity: "ignore",
-                  })
+                  `<p>HTML content:</p><pre>${html
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
