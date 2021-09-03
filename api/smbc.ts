@@ -1,6 +1,10 @@
-import parseDate from "date-fns/parse";
-import startOfToday from "date-fns/startOfToday";
-import { scrape, scrapeItems, createFeed, Cheerio } from "../src/util";
+import {
+  scrape,
+  scrapeItems,
+  createFeed,
+  Cheerio,
+  parseDate,
+} from "../src/util";
 
 const url = "https://www.smbc-comics.com/comic/rss";
 const parseURL = (relURL: string) => new URL(relURL, url);
@@ -42,11 +46,7 @@ module.exports = createFeed({
         title,
         content_html: `<img src="${imageSource}" title="${hovertext}"><br><img src="${extraImage}">`,
         image: imageSource.toString(),
-        date_published: parseDate(
-          date,
-          "EEE, dd MMM yyyy HH:mm:ss XX",
-          startOfToday()
-        ).toISOString(),
+        date_published: parseDate(date, "EEE, dd MMM yyyy HH:mm:ss XX"),
       };
     }
   ),

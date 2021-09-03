@@ -1,6 +1,4 @@
-import parseDate from "date-fns/parse";
-import startOfToday from "date-fns/startOfToday";
-import { createFeed, scrapeItems } from "../src/util";
+import { createFeed, scrapeItems, parseDate } from "../src/util";
 import { parse as parseSrcset } from "srcset";
 
 const url = "https://foxtrot.com";
@@ -33,9 +31,8 @@ export default createFeed({
       image: src,
       date_published: parseDate(
         comic.find(".entry-summary").text().trim(),
-        "MMMM do, yyyy",
-        startOfToday()
-      ).toISOString(),
+        "MMMM do, yyyy"
+      ),
     };
   }),
 });

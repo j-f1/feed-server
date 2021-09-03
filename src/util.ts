@@ -1,6 +1,8 @@
 import cheerio = require("cheerio");
 import fetch from "node-fetch";
 import sub from "date-fns/sub";
+import dateParser from "date-fns/parse";
+import { startOfToday } from "date-fns";
 import { format as prettier } from "prettier";
 
 export type Cheerio = ReturnType<typeof cheerio>;
@@ -12,6 +14,10 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 declare global {
   const URL: typeof import("url").URL;
   type URL = import("url").URL;
+}
+
+export function parseDate(date: string, format: string): string {
+  return dateParser(date, format, startOfToday()).toISOString();
 }
 
 Error.stackTraceLimit = 100;

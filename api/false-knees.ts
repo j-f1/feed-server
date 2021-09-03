@@ -1,6 +1,10 @@
-import parseDate from "date-fns/parse";
-import startOfToday from "date-fns/startOfToday";
-import { scrapeItems, scrape, createFeed, staticFile } from "../src/util";
+import {
+  scrapeItems,
+  scrape,
+  createFeed,
+  staticFile,
+  parseDate,
+} from "../src/util";
 
 const url = "https://www.falseknees.com/archive.html";
 const parseURL = (relURL: string) => new URL(relURL, url);
@@ -41,11 +45,7 @@ export default createFeed({
         title,
         content_html: `<img src="${imageSource}" title="${hovertext}">`,
         image: imageSource.toString(),
-        date_published: parseDate(
-          date,
-          "MMMM do, yyyy",
-          startOfToday()
-        ).toISOString(),
+        date_published: parseDate(date, "MMMM do, yyyy"),
       };
     }
   ),

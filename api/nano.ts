@@ -1,6 +1,4 @@
-import parseDate from "date-fns/parse";
-import startOfToday from "date-fns/startOfToday";
-import { scrape, createFeed, scrapeItems } from "../src/util";
+import { scrape, createFeed, scrapeItems, parseDate } from "../src/util";
 
 function parseLists(input: string) {
   const result: string[] = [];
@@ -54,9 +52,8 @@ export default createFeed({
                 .children()
                 .first()
                 .text()} ${$article.find("tt").text()}`,
-              "MMMM dd, yyyy HH:mm",
-              startOfToday()
-            ).toISOString(),
+              "MMMM dd, yyyy HH:mm"
+            ),
             author: { name: $article.find("i").text() },
             content_html: `<div style="white-space: pre-wrap">${parseLists(
               $("pre").html()!
