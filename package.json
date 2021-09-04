@@ -5,9 +5,11 @@
     "test": "prettier --check . && tsc --noEmit"
   },
   "dependencies": {
+    "@types/marked": "^3.0.0",
     "cheerio": "^1.0.0-rc.5",
     "date-fns": "^2.15.0",
     "date-fns-tz": "^1.0.10",
+    "marked": "^3.0.2",
     "node-fetch": "^2.6.0",
     "srcset": "^3.0.0"
   },

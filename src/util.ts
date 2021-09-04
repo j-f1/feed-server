@@ -20,6 +20,15 @@ export function parseDate(date: string, format: string): string {
   return dateParser(date, format, startOfToday()).toISOString();
 }
 
+export function escape(html: string): string {
+  return html
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 Error.stackTraceLimit = 100;
 
 export function makeError(error: Error) {
@@ -140,12 +149,7 @@ export function scrapeItems(
                 id: href,
                 content_html:
                   errorItem.content_html +
-                  `<p>HTML content:</p><pre>${html
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;")}</pre>`,
+                  `<p>HTML content:</p><pre>${escape(html)}</pre>`,
               };
             }
           },
