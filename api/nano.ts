@@ -47,11 +47,9 @@ export default createFeed({
               .replace("[Info-nano] ", "")
               .replace("[ANNOUNCE] ", ""),
             date_published: parseDate(
-              `${$article
-                .parents("li")
-                .children()
-                .first()
-                .text()} ${$article.find("tt").text()}`,
+              `${$article.parents("li").children().first().text()} ${$article
+                .find("tt")
+                .text()}`,
               "MMMM dd, yyyy HH:mm"
             ),
             author: { name: $article.find("i").text() },

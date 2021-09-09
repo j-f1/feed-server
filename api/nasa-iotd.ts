@@ -13,8 +13,7 @@ module.exports = createFeed({
   title: "NASA Image of the Day",
   home_page_url: "https://www.nasa.gov/multimedia/imagegallery/iotd.html",
   description: 'The latest NASA "Image of the Day" image.',
-  icon:
-    "https://www.nasa.gov/sites/all/themes/custom/nasatwo/images/apple-touch-icon-152x152.png",
+  icon: "https://www.nasa.gov/sites/all/themes/custom/nasatwo/images/apple-touch-icon-152x152.png",
   favicon:
     "https://www.nasa.gov/sites/all/themes/custom/nasatwo/images/apple-touch-icon-152x152.png",
   language: "en-US",
@@ -82,8 +81,7 @@ let _example: Ubernode = {
   _score: null,
   _source: {
     title: "Completing the Roman Telescope's Primary Mirror",
-    body:
-      '<p>The <a href="https://www.nasa.gov/content/goddard/nancy-grace-roman-space-telescope">Nancy Grace Roman Space Telescope</a>’s primary mirror, which will collect and focus light from cosmic objects near and far, has been completed. Using this mirror, Roman will capture stunning space vistas with a field of view 100 times greater than Hubble images.</p>\n\n<p>Roman will peer through dust and across vast stretches of space and time to study the universe using infrared light, which human eyes can’t see. The amount of detail these observations will reveal is directly related to the size of the telescope’s mirror, since a larger surface gathers more light and measures finer features.</p>\n\n<p>In this image, the Roman Space Telescope’s primary mirror reflects an American flag. </p>\n\n<p><em>Image Credit: L3Harris Technologies</em></p>',
+    body: '<p>The <a href="https://www.nasa.gov/content/goddard/nancy-grace-roman-space-telescope">Nancy Grace Roman Space Telescope</a>’s primary mirror, which will collect and focus light from cosmic objects near and far, has been completed. Using this mirror, Roman will capture stunning space vistas with a field of view 100 times greater than Hubble images.</p>\n\n<p>Roman will peer through dust and across vast stretches of space and time to study the universe using infrared light, which human eyes can’t see. The amount of detail these observations will reveal is directly related to the size of the telescope’s mirror, since a larger surface gathers more light and measures finer features.</p>\n\n<p>In this image, the Roman Space Telescope’s primary mirror reflects an American flag. </p>\n\n<p><em>Image Credit: L3Harris Technologies</em></p>',
     name: "Yvette Smith",
     "promo-date-time": "2020-09-04T00:57:00-04:00",
     uri: "/image-feature/completing-the-roman-telescopes-primary-mirror",
