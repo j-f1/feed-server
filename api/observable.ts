@@ -101,7 +101,7 @@ module.exports = createFeed({
         const parsed = notebook.nodes
           .slice(1, -2)
           .map((node) => parseNode(node, notebook));
-        const result = parsed.slice(1).reduce<[FeedItem[], FeedItem]>(
+        const result = parsed.slice(1).reduce<[readonly FeedItem[], FeedItem]>(
           ([nodes, next], arg) => {
             if (isReduce(arg)) {
               (next as any).content_html += arg.html;

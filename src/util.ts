@@ -45,7 +45,9 @@ export function makeError(error: Error) {
 export function createFeed({
   items: getItems,
   ...props
-}: Omit<JSONFeed, "items" | "version"> & { items: () => Promise<FeedItem[]> }) {
+}: Omit<JSONFeed, "items" | "version"> & {
+  items: () => Promise<readonly FeedItem[]>;
+}) {
   return async (req: VercelRequest, res: VercelResponse) => {
     const feed = { feed_url: req.url, ...props };
     try {
@@ -66,7 +68,7 @@ export function makeMidnight(date: Date) {
 
 export function map<T>(
   selection: Cheerio,
-  mapper: (el: Cheerio, i: number) => T,
+  mapper: (el: Cheerio, i: number) => T | readonly T[],
   limit?: number
 ) {
   const array = selection.toArray();
@@ -77,7 +79,7 @@ export function map<T>(
 
 map.await = <T>(
   selection: Cheerio,
-  mapper: (el: Cheerio, i: number) => Promise<T | T[]>,
+  mapper: (el: Cheerio, i: number) => Promise<T | readonly T[]>,
   limit?: number
 ) =>
   Promise.all(map(selection, mapper, limit)).then((result) =>
@@ -113,7 +115,7 @@ export function scrapeItems(
     selector: (($: $) => Cheerio) | string;
     limit?: number;
   },
-  mapper: (item: Cheerio, $: $) => Awaitable<FeedItem | FeedItem[]>
+  mapper: (item: Cheerio, $: $) => Awaitable<FeedItem | readonly FeedItem[]>
 ) {
   return () =>
     scrape(url, { xml })

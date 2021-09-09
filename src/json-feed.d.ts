@@ -11,12 +11,12 @@ export interface JSONFeed {
   next_url?: string;
   icon?: string;
   favicon?: string;
-  authors?: FeedAuthor[];
+  authors?: readonly FeedAuthor[];
   /** @deprecated */ author?: FeedAuthor;
   language?: string;
   expired?: boolean;
   hubs?: { type: string; url: string }[]; // very optional
-  items: FeedItem[];
+  items: readonly FeedItem[];
 }
 
 export interface FeedAuthor {
@@ -35,11 +35,11 @@ export type FeedItem = {
   banner_image?: string;
   date_published?: string; // RFC 3339 format
   date_modified?: string; // RFC 3339 format
-  authors?: FeedAuthor[];
+  authors?: readonly FeedAuthor[];
   author?: FeedAuthor;
-  tags?: string[];
+  tags?: readonly string[];
   language?: string;
-  attachments?: FeedAttachment[];
+  attachments?: readonly FeedAttachment[];
 } & ({ content_html: string } | { content_text: string });
 
 export interface FeedAttachment {
