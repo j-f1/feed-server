@@ -66,8 +66,7 @@ function parseClassic($: CheerioAPI, url: string): FeedItem {
 module.exports = createFeed({
   title: "The New Yorker",
   home_page_url: "https://www.newyorker.com/",
-  icon:
-    "https://media.newyorker.com/photos/59096d7d6552fa0be682ff8f/master/eustace-400.png",
+  icon: "https://media.newyorker.com/photos/59096d7d6552fa0be682ff8f/master/eustace-400.png",
   items: scrapeItems(
     "https://www.kill-the-newsletter.com/feeds/yof6oolwi1ssoj74co8r.xml",
     { xml: true, selector: "entry", limit: 10 },
