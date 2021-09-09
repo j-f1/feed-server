@@ -1,9 +1,10 @@
-import { map, makeMidnight, scrapeItems, Cheerio } from "../src/util";
+import { map, makeMidnight, scrapeItems } from "../src/util";
 
 import parseDate from "date-fns/parse";
 import startOfToday from "date-fns/startOfToday";
 import isValid from "date-fns/isValid";
 import zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
+import { Cheerio, Element } from "cheerio";
 import { FeedItem } from "./json-feed";
 
 export function parsePublishDate(date: string) {
@@ -25,7 +26,10 @@ export function parseArticles(
   );
 }
 
-function parseArticle(parseURL: (url: string) => URL, article: Cheerio) {
+function parseArticle(
+  parseURL: (url: string) => URL,
+  article: Cheerio<Element>
+) {
   const title = article.find("h4");
   const articleURL = parseURL(title.parents("a").attr("href")!).toString();
   const summary = article.find("h5").text();

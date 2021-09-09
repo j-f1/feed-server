@@ -1,13 +1,16 @@
-import cheerio = require("cheerio");
+import cheerio, {
+  Cheerio,
+  Node,
+  CheerioAPI,
+  Element,
+  SelectorType,
+} from "cheerio";
 import fetch from "node-fetch";
 import sub from "date-fns/sub";
 import dateParser from "date-fns/parse";
 import { startOfToday } from "date-fns";
 import { format as prettier } from "prettier";
-
-export type Cheerio = ReturnType<typeof cheerio>;
 export type Awaitable<T> = T | PromiseLike<T>;
-export type $ = ReturnType<typeof cheerio.load>;
 import { JSONFeed, FeedItem } from "./json-feed";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
@@ -53,7 +56,7 @@ export function createFeed({
     try {
       const items = await getItems();
       sendFeed(res, { ...feed, items });
-    } catch (error) {
+    } catch (error: any) {
       sendFeed(res, {
         ...feed,
         items: [{ ...makeError(error), title: `Error in ${props.title}` }],
@@ -66,9 +69,9 @@ export function makeMidnight(date: Date) {
   return sub(date, { minutes: new Date().getTimezoneOffset() });
 }
 
-export function map<T>(
-  selection: Cheerio,
-  mapper: (el: Cheerio, i: number) => T | readonly T[],
+export function map<T extends Node, Result>(
+  selection: Cheerio<T>,
+  mapper: (el: Cheerio<T>, i: number) => Result | readonly Result[],
   limit?: number
 ) {
   const array = selection.toArray();
@@ -77,9 +80,9 @@ export function map<T>(
   );
 }
 
-map.await = <T>(
-  selection: Cheerio,
-  mapper: (el: Cheerio, i: number) => Promise<T | readonly T[]>,
+map.await = <T extends Node, Result>(
+  selection: Cheerio<T>,
+  mapper: (el: Cheerio<T>, i: number) => Promise<Result | readonly Result[]>,
   limit?: number
 ) =>
   Promise.all(map(selection, mapper, limit)).then((result) =>
@@ -112,10 +115,13 @@ export function scrapeItems(
     limit,
   }: {
     xml?: boolean;
-    selector: (($: $) => Cheerio) | string;
+    selector: (($: CheerioAPI) => Cheerio<Element>) | SelectorType;
     limit?: number;
   },
-  mapper: (item: Cheerio, $: $) => Awaitable<FeedItem | readonly FeedItem[]>
+  mapper: (
+    item: Cheerio<Element>,
+    $: CheerioAPI
+  ) => Awaitable<FeedItem | readonly FeedItem[]>
 ) {
   return () =>
     scrape(url, { xml })
@@ -125,7 +131,7 @@ export function scrapeItems(
           async (item) => {
             try {
               return await mapper(item, $);
-            } catch (err) {
+            } catch (err: any) {
               const href = item.find("a").attr("href") || url.toString();
               const errorItem = makeError(err);
               let html;

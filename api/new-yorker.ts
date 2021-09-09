@@ -1,12 +1,5 @@
-import {
-  map,
-  scrapeItems,
-  createFeed,
-  Cheerio,
-  makeError,
-  $,
-} from "../src/util";
-import cheerio = require("cheerio");
+import { map, scrapeItems, createFeed, makeError } from "../src/util";
+import cheerio, { Cheerio, CheerioAPI, Element } from "cheerio";
 import { parsePublishDate } from "../src/new-yorker";
 import fetch from "node-fetch";
 import { FeedItem } from "../src/json-feed";
@@ -29,7 +22,7 @@ const exclusions = [
   "Newsletters",
 ];
 
-async function parseArticle(article: Cheerio) {
+async function parseArticle(article: Cheerio<Element>) {
   const articleResponse = await fetch(article.attr("href")!);
   const articleURL = articleResponse.url.split("?")[0];
 
@@ -47,7 +40,7 @@ async function parseArticle(article: Cheerio) {
   };
 }
 
-function parseClassic($: $, url: string): FeedItem {
+function parseClassic($: CheerioAPI, url: string): FeedItem {
   const title = $('[style="font-size: 28px; color: #000000;"]');
   return {
     id: url,
