@@ -2,7 +2,8 @@ import fetch from "node-fetch";
 import { createFeed } from "../src/util";
 import { encode } from "querystring";
 
-const absolute = (relURL: string) => new URL(relURL, "https://www.nasa.gov/");
+const absolute = (relURL: string) =>
+  new URL(relURL, "https://www.nasa.gov/").toString();
 const image = (uri: string) =>
   absolute(uri.replace("public://", "/sites/default/files/"));
 
@@ -29,15 +30,17 @@ module.exports = createFeed({
             "title,body,uri,promo-date-time,master-image,image-feature-caption,name",
         })
     )
-      .then((res) => res.json())
+      .then(
+        (res) => res.json() as Promise<{ hits: { hits: readonly Ubernode[] } }>
+      )
       .then(({ hits: { hits } }) =>
-        hits.map(({ _source: item }: Ubernode) => ({
+        hits.map(({ _source: item }) => ({
           id: absolute(item.uri),
           url: absolute(item.uri),
           title: item.title,
           content_html:
             `<img src="${escape(
-              image(item["master-image"].uri).toString()
+              image(item["master-image"].uri)
             )}" alt="${escape(item["master-image"].alt)}" width="${escape(
               item["master-image"].width
             )}" height="${escape(item["master-image"].height)}">` + item.body,

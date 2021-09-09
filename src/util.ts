@@ -14,11 +14,6 @@ export type Awaitable<T> = T | PromiseLike<T>;
 import { JSONFeed, FeedItem } from "./json-feed";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
-declare global {
-  const URL: typeof import("url").URL;
-  type URL = import("url").URL;
-}
-
 export function parseDate(date: string, format: string): string {
   return dateParser(date, format, startOfToday()).toISOString();
 }
@@ -102,7 +97,7 @@ export function scrape(
   url: string | URL,
   options?: Parameters<typeof cheerio.load>[1]
 ) {
-  return fetch(url)
+  return fetch(typeof url === "string" ? url : url.toString())
     .then((res) => res.text())
     .then((text) => cheerio.load(text, options));
 }

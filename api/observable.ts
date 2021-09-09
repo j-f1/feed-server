@@ -96,8 +96,8 @@ module.exports = createFeed({
     fetch(
       "https://api.observablehq.com/document/@observablehq/observable-release-notes"
     )
-      .then((res) => res.json())
-      .then((notebook: Notebook) => {
+      .then((res) => res.json() as Promise<Notebook>)
+      .then((notebook) => {
         const parsed = notebook.nodes
           .slice(1, -2)
           .map((node) => parseNode(node, notebook));

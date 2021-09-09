@@ -36,20 +36,18 @@ export default createFeed({
         { selector: "a[href^=msg]" },
         ($threadLink) => {
           const $article = $threadLink.parent();
-          const articleURL = new URL(
-            $threadLink.attr("href")!,
-            monthURL
-          ).toString();
+          const articleURL = new URL($threadLink.attr("href")!, monthURL);
           return scrape(articleURL).then(($) => ({
-            id: articleURL,
+            id: articleURL.toString(),
             title: $threadLink
               .text()
               .replace("[Info-nano] ", "")
               .replace("[ANNOUNCE] ", ""),
             date_published: parseDate(
-              `${$article.parents("li").children().first().text()} ${$article
-                .find("tt")
-                .text()}`,
+              [
+                $article.parents("li").children().first().text(),
+                $article.find("tt").text(),
+              ].join(" "),
               "MMMM dd, yyyy HH:mm"
             ),
             author: { name: $article.find("i").text() },
