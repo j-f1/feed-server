@@ -1,10 +1,4 @@
-import {
-  scrape,
-  scrapeItems,
-  createFeed,
-  Cheerio,
-  parseDate,
-} from "../src/util";
+import { scrape, scrapeItems, createFeed, parseDate } from "../src/util";
 
 const url = "https://www.smbc-comics.com/comic/rss";
 const parseURL = (relURL: string) => new URL(relURL, url);
@@ -27,9 +21,7 @@ module.exports = createFeed({
         .replace("Saturday Morning Breakfast Cereal - ", "");
       const date = comic
         .children()
-        .filter(function (this: Cheerio[number]) {
-          return this.name === "pubDate";
-        })
+        .filter((_, el) => el.name === "pubDate")
         .text();
 
       const comicURL = parseURL(comic.find("link").text());
