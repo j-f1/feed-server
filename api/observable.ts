@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-import { FeedItem } from "../src/json-feed";
+import type { FeedItem } from "../src/json-feed";
 import { createFeed, parseDate, escape } from "../src/util";
 import { format as prettier } from "prettier";
-import marked = require("marked");
+const marked = require("marked");
 
 const url = "https://observablehq.com/@observablehq/observable-release-notes";
 

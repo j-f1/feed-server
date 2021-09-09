@@ -1,11 +1,11 @@
-import { map, makeMidnight, scrapeItems } from "../src/util";
+import { map, makeMidnight, scrapeItems } from "./util";
 
 import parseDate from "date-fns/parse";
 import startOfToday from "date-fns/startOfToday";
 import isValid from "date-fns/isValid";
-import zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
 import { Cheerio, Element } from "cheerio";
-import { FeedItem } from "./json-feed";
+import type { FeedItem } from "./json-feed";
+const zonedTimeToUtc = require("date-fns-tz/zonedTimeToUtc");
 
 export function parsePublishDate(date: string) {
   const dayDate = parseDate(date, "LLLL d, y", startOfToday());

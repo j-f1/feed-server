@@ -11,8 +11,8 @@ import dateParser from "date-fns/parse";
 import { startOfToday } from "date-fns";
 import { format as prettier } from "prettier";
 export type Awaitable<T> = T | PromiseLike<T>;
-import { JSONFeed, FeedItem } from "./json-feed";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import type { JSONFeed, FeedItem } from "./json-feed";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 export function parseDate(date: string, format: string): string {
   return dateParser(date, format, startOfToday()).toISOString();

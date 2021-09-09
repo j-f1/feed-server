@@ -3,6 +3,10 @@
     "strict": true,
     "noImplicitAny": true,
     "lib": ["ES2019"],
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "target": "ES2019",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "esModuleInterop": false
   }
 }

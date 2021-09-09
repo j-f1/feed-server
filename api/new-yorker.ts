@@ -2,7 +2,7 @@ import { map, scrapeItems, createFeed, makeError } from "../src/util";
 import cheerio, { Cheerio, CheerioAPI, Element } from "cheerio";
 import { parsePublishDate } from "../src/new-yorker";
 import fetch from "node-fetch";
-import { FeedItem } from "../src/json-feed";
+import type { FeedItem } from "../src/json-feed";
 
 const exclusions = [
   "Daily Shouts",
