@@ -61,7 +61,12 @@ function parseNode(
       /^\n*---\n*<span class="date">(?<date>[^<]+)<\/span>\s*### (?<title>[^\n]+)\n*(<br>\n*)?(?<content>[\s\S]+)$/m
     );
     if (!match || !match.groups) return makeError({ ...node, orig, match });
-    const date = parseDate(match.groups.date, "MMMM d, yyyy");
+    let date: string;
+    try {
+        date = parseDate(match.groups.date, "MMMM d, yyyy");
+    } catch {
+        date = parseDate(match.groups.date, "MMMM do, yyyy");
+    }
     return {
       id: String(node.id),
       url: hash ? url + "#" + hash : url,
