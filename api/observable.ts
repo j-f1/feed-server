@@ -15,7 +15,8 @@ function makeError<T extends Node>(node: T): FeedItem {
         parser: "json5",
       })
     )}</pre><hr><pre>${escape(node.value)}</pre>`,
-  };
+    content: node,
+  } as any;
 }
 
 interface Figure {
@@ -58,14 +59,14 @@ function parseNode(
     };
   } else if (node.mode === "md") {
     const match = node.value.match(
-      /^\n*---\n*<span class="date">(?<date>[^<]+)<\/span>\s*### (?<title>[^\n]+)\n*(<br>\n*)?(?<content>[\s\S]+)$/m
+      /^\n*(?:---\n*)?<span class="date">(?<date>[^<]+)<\/span>\s*### (?<title>[^\n]+)\n*(<br>\n*)?(?<content>[\s\S]+)$/m
     );
     if (!match || !match.groups) return makeError({ ...node, orig, match });
     let date: string;
     try {
-        date = parseDate(match.groups.date, "MMMM d, yyyy");
+      date = parseDate(match.groups.date, "MMMM d, yyyy");
     } catch {
-        date = parseDate(match.groups.date, "MMMM do, yyyy");
+      date = parseDate(match.groups.date, "MMMM do, yyyy");
     }
     return {
       id: String(node.id),
@@ -104,7 +105,8 @@ module.exports = createFeed({
       .then((res) => res.json())
       .then((notebook: Notebook) => {
         const parsed = notebook.nodes
-          .slice(1, -2)
+          .slice(1, -1)
+          .filter((n) => n.value.replace(" ", "") !== "md`---`")
           .map((node) => parseNode(node, notebook));
         const result = parsed.slice(1).reduce<[readonly FeedItem[], FeedItem]>(
           ([nodes, next], arg) => {
