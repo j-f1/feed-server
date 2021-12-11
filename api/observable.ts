@@ -48,7 +48,7 @@ function parseNode(
     }
   } else if (
     (node.mode === "html" || node.mode == "md") &&
-    node.value.match(/^\n*<figure( style="max-width:800px")?>/)
+    node.value.match(/^\n*<figure( style="max-width:\d+px")?>/)
   ) {
     return {
       figure: true,
@@ -76,6 +76,10 @@ function parseNode(
       content_html: marked(
         match.groups.content
           .replace(/\$\{svg`([\s\S]+?)`\}/gm, "$1")
+          .replace(
+            /\(\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}\)/,
+            (_, name) => `(${notebook.files.find((f) => f.name === name)!.url})`
+          )
           .replace(
             /\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}/,
             (_, name) => `"${notebook.files.find((f) => f.name === name)!.url}"`
