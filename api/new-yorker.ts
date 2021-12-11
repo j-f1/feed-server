@@ -20,6 +20,7 @@ const exclusions = [
   "Photo Booth",
   "Cryptic Crossword",
   "Newsletters",
+  "Name Drop",
 ];
 
 async function parseArticle(article: Cheerio<Element>) {
