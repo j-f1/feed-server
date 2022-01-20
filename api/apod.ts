@@ -77,8 +77,8 @@ export default createFeed({
               ...article,
               content_html:
                 $("center:first-of-type > p:last-child > a").toString() +
-                $("p:first-of-type").toString() +
-                `<p>${$("body > center:nth-of-type(2)").html()}</p>`,
+                $("center + p").toString() +
+                `<p>${$("center:nth-of-type(2)").html()}</p>`,
             };
           })
       );
