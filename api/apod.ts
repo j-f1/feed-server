@@ -1,6 +1,4 @@
 import { scrape, createFeed, parseDate } from "../src/util";
-import dateParser from "date-fns/parse";
-import { startOfToday } from "date-fns";
 import { Element } from "cheerio";
 import { Text } from "domhandler";
 import { FeedItem } from "../src/json-feed";
@@ -39,7 +37,7 @@ export default createFeed({
             if (i % 3 === 0) {
               acc.push([node] as any);
             } else {
-              acc[acc.length - 1].push(node);
+              acc[acc.length - 1].push(node as any);
             }
             return acc;
           }, [] as Array<[Text, Element, Text]>)
