@@ -30,7 +30,7 @@ export default createFeed({
         data,
         name,
         attribs,
-        children: children?.map(toJSON),
+        children: children && children.map(toJSON),
       });
       return Promise.all(
         archive.children
