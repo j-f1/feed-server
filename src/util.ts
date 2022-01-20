@@ -100,11 +100,12 @@ export function staticFile(name: string) {
 
 export function scrape(
   url: string | URL,
-  options?: Parameters<typeof cheerio.load>[1]
+  options?: Parameters<typeof cheerio.load>[1],
+  isDocument = true
 ) {
   return fetch(url)
     .then((res) => res.text())
-    .then((text) => cheerio.load(text, options));
+    .then((text) => cheerio.load(text, options, isDocument));
 }
 
 export function scrapeItems(
