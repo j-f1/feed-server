@@ -46,7 +46,7 @@ export default createFeed({
               const url = new URL(link.attribs.href, archiveURL).toString();
               return {
                 id: url,
-                date: parseDate(date.data.trim(), "yyyy MMMM dd:"),
+                date_published: parseDate(date.data.trim(), "yyyy MMMM dd:"),
                 title: (link.children[0] as Text).data,
                 url: url,
               };
