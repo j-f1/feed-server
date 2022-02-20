@@ -20,7 +20,15 @@ declare global {
 }
 
 export function parseDate(date: string, format: string): string {
-  return dateParser(date, format, startOfToday()).toISOString();
+  try {
+    return dateParser(date.trim(), format, startOfToday()).toISOString();
+  } catch (e) {
+    console.log([date, format]);
+    try {
+      console.log(dateParser(date, format, startOfToday()));
+    } catch {}
+    throw e;
+  }
 }
 
 export function escape(html: string): string {
