@@ -75,7 +75,7 @@ function parseNode(
       date_published: date,
       content_html: marked(
         match.groups.content
-          .replace(/\$\{svg\s*`([\s\S]+?)l`\}/gm, "$1")
+          .replace(/\$\{\s*svg\s*`([\s\S]+?)l`\s*\}/gm, "$1")
           .replace(
             /\(\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}\)/,
             (_, name) => `(${notebook.files.find((f) => f.name === name)!.url})`
