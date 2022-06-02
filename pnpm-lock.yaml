@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/marked': ^3.0.0
+  '@types/node': ^17.0.38
   '@types/node-fetch': ^2.5.8
   '@types/prettier': ^2.6.3
   '@vercel/node': ^2.0.0
@@ -25,6 +26,7 @@ dependencies:
   srcset: 3.0.1
 
 devDependencies:
+  '@types/node': 17.0.38
   '@types/node-fetch': 2.6.1
   '@types/prettier': 2.6.3
   '@vercel/node': 2.0.0
@@ -121,7 +123,7 @@ packages:
   /@types/busboy/0.3.2:
     resolution: {integrity: sha512-iEvdm9Z9KdSs/ozuh1Z7ZsXrOl8F4M/CLMXPZHr3QuJ4d6Bjn+HBMC5EMKpwpAo8oi8iK9GZfFoHaIMrrZgwVw==}
     dependencies:
-      '@types/node': 17.0.19
+      '@types/node': 17.0.38
     dev: true
 
   /@types/cookie/0.4.1:
@@ -131,7 +133,7 @@ packages:
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 17.0.19
+      '@types/node': 17.0.38
     dev: true
 
   /@types/marked/3.0.3:
@@ -141,12 +143,8 @@ packages:
   /@types/node-fetch/2.6.1:
     resolution: {integrity: sha512-oMqjURCaxoSIsHSr1E47QHzbmzNR5rK8McHuNb11BOM9cHcIK3Avy0s/b2JlXHoQGTYS3NsvWzV1M0iK7l0wbA==}
     dependencies:
-      '@types/node': 17.0.19
+      '@types/node': 17.0.38
       form-data: 3.0.1
-    dev: true
-
-  /@types/node/17.0.19:
-    resolution: {integrity: sha512-PfeQhvcMR4cPFVuYfBN4ifG7p9c+Dlh3yUZR6k+5yQK7wX3gDgVxBly4/WkBRs9x4dmcy1TVl08SY67wwtEvmA==}
     dev: true
 
   /@types/node/17.0.38:
@@ -160,7 +158,7 @@ packages:
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 17.0.19
+      '@types/node': 17.0.38
     dev: true
 
   /@vercel/build-utils/4.0.0:

@@ -16,6 +16,7 @@
     "srcset": "^3.0.0"
   },
   "devDependencies": {
+    "@types/node": "^17.0.38",
     "@types/node-fetch": "^2.5.8",
     "@types/prettier": "^2.6.3",
     "@vercel/node": "^2.0.0",
