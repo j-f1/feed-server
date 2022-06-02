@@ -3,7 +3,6 @@ import { FeedItem } from "../src/json-feed";
 import { createFeed, parseDate, escape } from "../src/util";
 import { format as prettier } from "prettier";
 import marked = require("marked");
-import { Runtime } from "@observablehq/runtime";
 
 const url = "https://observablehq.com/@observablehq/observable-release-notes";
 
@@ -105,13 +104,11 @@ module.exports = createFeed({
   favicon: "https://avatars2.githubusercontent.com/u/30080011?v=4&s=64",
   language: "en-US",
   items: () =>
-    import(
+    fetch(
       "https://api.observablehq.com/document/@observablehq/observable-release-notes"
     )
       .then((res) => res.json())
       .then((notebook: Notebook) => {
-        const runtime = new Runtime();
-        const main = runtime.module();
         const parsed = notebook.nodes
           .slice(1, -3)
           .filter((n) => n.value.replace(" ", "") !== "md`---`")
