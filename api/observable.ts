@@ -48,7 +48,7 @@ function parseNode(
     }
   } else if (
     (node.mode === "html" || node.mode == "md") &&
-    node.value.match(/^\n*<figure( style="max-width:\d+px")?>/)
+    node.value.match(/^\n*<figure( style="max-width:\d+px[^"]*")?>/)
   ) {
     return {
       figure: true,
@@ -81,8 +81,9 @@ function parseNode(
             (_, name) => `(${notebook.files.find((f) => f.name === name)!.url})`
           )
           .replace(
-            /\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}/,
-            (_, name) => `"${notebook.files.find((f) => f.name === name)!.url}"`
+            /("?)\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}\1/,
+            (_, quote, name) =>
+              '"' + notebook.files.find((f) => f.name === name)!.url + '"'
           )
           .replace(
             /(<p style="background: #fffced; box-sizing: border-box; padding: 10px 20px;">)(.+?)<\/p>/,
@@ -109,7 +110,7 @@ module.exports = createFeed({
       .then((res) => res.json())
       .then((notebook: Notebook) => {
         const parsed = notebook.nodes
-          .slice(1, -1)
+          .slice(1, -3)
           .filter((n) => n.value.replace(" ", "") !== "md`---`")
           .map((node) => parseNode(node, notebook));
         const result = parsed.slice(1).reduce<[readonly FeedItem[], FeedItem]>(
