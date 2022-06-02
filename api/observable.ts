@@ -52,10 +52,15 @@ function parseNode(
   ) {
     return {
       figure: true,
-      html: node.value.replace(
-        /\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}/,
-        (_, name) => `"${notebook.files.find((f) => f.name === name)!.url}"`
-      ),
+      html: node.value
+        .replace(
+          /\$\{(?:await )+visibility\(\)\.then\(\(\) => ([\s\S]+?)\)\}/gm,
+          "$1"
+        )
+        .replace(
+          /\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}/,
+          (_, name) => `"${notebook.files.find((f) => f.name === name)!.url}"`
+        ),
     };
   } else if (node.mode === "md") {
     const match = node.value.match(
@@ -75,6 +80,10 @@ function parseNode(
       date_published: date,
       content_html: marked(
         match.groups.content
+          .replace(
+            /\$\{(?:await )+visibility\(\)\.then\(\(\) => ([\s\S]+?)\)\}/gm,
+            "$1"
+          )
           .replace(/\$\{\s*svg\s*`([\s\S]+?)`\s*\}/gm, "$1")
           .replace(
             /\(\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.url\(\)\}\)/,
@@ -86,9 +95,28 @@ function parseNode(
               '"' + notebook.files.find((f) => f.name === name)!.url + '"'
           )
           .replace(
+            /\$\{await FileAttachment\(\s*"([^"]+)"\s*\)\.image\((\{[^}]+\})?\)\}/,
+            (_, name, optsStr) => {
+              const opts = eval(optsStr);
+              return `<img src="${
+                notebook.files.find((f) => f.name === name)!.url
+              }" ${opts.width ? `width="${opts.width}"` : ""} ${
+                opts.height ? `height="${opts.height}"` : ""
+              } ${
+                opts.style
+                  ? `style="max-width: 640px; ${opts.style}"`
+                  : 'style="max-width: 640px"'
+              } />`;
+            }
+          )
+          .replace(
             /(<p style="background: #fffced; box-sizing: border-box; padding: 10px 20px;">)(.+?)<\/p>/,
             (_, tag, content) => `${tag}${marked.parseInline(content)}</p>`
           )
+          .replace(/\$\{buttons\(("[^"]+")\)\}/g, (_, arg) =>
+            buttons(JSON.parse(arg))
+          )
+          .replace(/<br>\n([^\n])/, "<br>\n\n$1")
       ),
     };
   }
@@ -144,3 +172,51 @@ interface Node {
   pinned: boolean;
   mode: string;
 }
+
+// from https://observablehq.com/@observablehq/keys
+
+const buttons = (() => {
+  const shortwords = {
+    Alt: "⌥opt",
+    Tab: "⇥tab",
+    Up: "↑",
+    Down: "↓",
+    Left: "←",
+    Right: "→",
+    Mod: "⌘cmd",
+    Cmd: "⌘cmd",
+    Ctrl: "⌃ctrl",
+    Shift: "⇧shift",
+    Enter: "↩︎return",
+    Backspace: "⌫delete",
+    Escape: "⎋esc",
+  };
+  const order = {
+    Ctrl: -4,
+    Alt: -3,
+    Shift: -2,
+    Mod: -1,
+    Cmd: -1,
+  };
+
+  function remap(keyset: string, map = shortwords) {
+    const keys = keyset.split("-");
+    return keys
+      .slice()
+      .sort(
+        (a, b) =>
+          (order[a as keyof typeof order] || keys.indexOf(a)) -
+          (order[b as keyof typeof order] || keys.indexOf(b))
+      )
+      .map((key) => (map && map[key as keyof typeof order]) || key);
+  }
+
+  return function buttons(keyset: string) {
+    return remap(keyset)
+      .map(
+        (key) =>
+          `<span style="font: 500 12px var(--sans-serif); margin: 0 4px; padding: 0 4px; border-radius: 0.25rem; box-shadow: 0 0 0 1px #dedede, 1px 1px 0 1px #e8e8e8;">${key.toLowerCase()}</span>`
+      )
+      .join("");
+  };
+})();
