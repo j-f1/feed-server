@@ -1,25 +1,26 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "vc dev",
     "test": "prettier --check . && tsc --noEmit"
   },
   "dependencies": {
     "@types/marked": "^3.0.0",
-    "cheerio": "^1.0.0-rc.10",
+    "cheerio": "1.0.0-rc.11",
     "date-fns": "^2.15.0",
     "date-fns-tz": "^1.0.10",
     "marked": "^3.0.8",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "srcset": "^3.0.0"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.8",
-    "@types/prettier": "^2.2.3",
-    "@vercel/node": "^1.9.0",
-    "prettier": "^2.4.0",
-    "typescript": "^4.4.2",
-    "vercel": "^24.2.6-canary.0"
+    "@types/prettier": "^2.6.3",
+    "@vercel/node": "^2.0.0",
+    "prettier": "^2.6.2",
+    "typescript": "^4.7.2",
+    "vercel": "^25.0.0"
   }
 }
