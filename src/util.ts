@@ -196,6 +196,50 @@ export function sendFeed(
   res: VercelResponse,
   feed: Omit<import("./json-feed").JSONFeed, "version">
 ) {
+  if (res.req.headers.accept?.includes("text/html")) {
+    res.setHeader("Content-Type", "text/html");
+    res.status(200).end(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>${feed.title}</title>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+        </head>
+        <body>
+          <pre style="white-space: pre-wrap"><code class="language-json">${escape(
+            JSON.stringify(feed, null, 2)
+          )}</code></pre>
+          <script>
+            hljs.highlightAll();
+            setTimeout(() => {
+              const div = document.createElement("div");
+              document.querySelectorAll(".hljs-string").forEach(el => {
+                if (el.textContent.includes("\\\\n")) {
+                  let prevChild = el;
+                  while (prevChild.nodeType !== Node.TEXT_NODE || !prevChild.textContent.includes("\\n")) {
+                    prevChild = prevChild.previousSibling;
+                  }
+                  const indent = prevChild.textContent.split("\\n").pop().length;
+
+                  div.textContent = JSON.parse(el.textContent);
+                  const escaped = div.innerHTML;
+
+                  el.innerHTML = \`"""\n<div style="margin-left: \${indent + 4}ch; text-indent: -2ch"><p style="margin: 0">\${escaped.replace(
+                    /\\n/g,
+                    '\\n<p style="margin: 0">'
+                  )}</div>\${" ".repeat(indent)}"""<div style="color: black; font-family: system-ui; white-space: normal; margin-left: \${indent + 4}ch;">\${JSON.parse(el.textContent)}</div>\`;
+                }
+              });
+            }, 30);
+          </script>
+        </body>
+      </html>
+    `);
+    return;
+  }
   res.setHeader("content-type", "application/feed+json; charset=utf-8");
   if (process.env.NODE_ENV === "production") {
     if (feed.items[0].id === "error") {
