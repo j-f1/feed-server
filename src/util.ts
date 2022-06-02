@@ -14,11 +14,6 @@ export type Awaitable<T> = T | PromiseLike<T>;
 import { JSONFeed, FeedItem } from "./json-feed";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
-declare global {
-  const URL: typeof import("url").URL;
-  type URL = import("url").URL;
-}
-
 export function parseDate(date: string, format: string): string {
   try {
     return dateParser(date.trim(), format, startOfToday()).toISOString();
