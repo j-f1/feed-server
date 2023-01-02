@@ -26,7 +26,7 @@ export default createFeed({
       id: comic.find(".entry-title a").attr("href")!,
       author: { name: "Bill Amend", url },
       title: comic.find(".entry-title").text(),
-      content_html: `<img ${srcset ? `srcset="${srcset}"` : `src="${src}"`}>`,
+      content_html: `<img ${srcset ? `srcset="${srcset}" ` : ""}src="${src}">`,
       image: src,
       date_published: parseDate(
         comic.find(".entry-summary").text().trim(),
